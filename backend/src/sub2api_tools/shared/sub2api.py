@@ -8,6 +8,9 @@ import requests
 from .config import Sub2APIConfig
 
 
+USERINFO_PATH = "/api/v1/auth/me"
+
+
 class Sub2APIClient:
     def __init__(self, cfg: Sub2APIConfig, timeout: float = 8.0):
         self.cfg = cfg
@@ -18,7 +21,7 @@ class Sub2APIClient:
         if not credential:
             raise ValueError("credential is required")
         resp = self.session.get(
-            _join(self.cfg.base_url, self.cfg.userinfo_path),
+            _join(self.cfg.base_url, USERINFO_PATH),
             headers={"Accept": "application/json", "Authorization": f"Bearer {credential}"},
             timeout=self.timeout,
         )

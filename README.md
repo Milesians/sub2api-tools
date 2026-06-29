@@ -25,6 +25,7 @@ docker compose -f docker-compose.example.yml up -d
 - 后端接口固定为 `{basePath}/api/...`，例如 `/tools/api/health`
 - `features[].visibility` 必须是 YAML list，值只支持 `user` / `admin`
 - `security.allowed_origins` 控制允许访问工具的外部来源，支持 `https://*.example.com`；泛域名只匹配子域，不包含根域。
+- sub2api 内部接口路径由程序固定，YAML 只配置 `sub2api.base_url` 和 `sub2api.admin_api_key`。
 
 ## 部署
 

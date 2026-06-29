@@ -16,8 +16,6 @@ security:
 sub2api:
   base_url: "https://sub2api.example.com"
   admin_api_key: "change_this_admin_api_key"
-  settings_path: "/api/v1/admin/settings"
-  userinfo_path: "/api/v1/user"
   endpoint_cache_ttl_seconds: 60
 
 storage:

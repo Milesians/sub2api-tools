@@ -47,8 +47,6 @@ class SecurityConfig:
 class Sub2APIConfig:
     base_url: str = ""
     admin_api_key: str = ""
-    settings_path: str = "/api/v1/admin/settings"
-    userinfo_path: str = "/api/v1/user"
     endpoint_cache_ttl_seconds: int = 60
 
 
@@ -187,7 +185,7 @@ def load_config(path: str | Path = "config.yaml") -> Config:
     cfg = Config(
         app=_app_config(data.get("app", {})),
         security=_security_config(data.get("security", {})),
-        sub2api=_build(Sub2APIConfig, data.get("sub2api", {})),
+        sub2api=_sub2api_config(data.get("sub2api", {})),
         storage=_build(StorageConfig, data.get("storage", {})),
         features=[_feature(item) for item in data.get("features", [])],
         looking_glass=_looking_glass(data.get("looking_glass", {})),
@@ -257,6 +255,15 @@ def _security_config(data: dict[str, Any]) -> SecurityConfig:
     if old_keys:
         raise ValueError(f"security.{old_keys[0]} was replaced by security.allowed_origins")
     return _build(SecurityConfig, data)
+
+
+def _sub2api_config(data: dict[str, Any]) -> Sub2APIConfig:
+    if not isinstance(data, dict):
+        raise ValueError("Sub2APIConfig must be a mapping")
+    old_keys = sorted(set(data) & {"settings_path", "userinfo_path"})
+    if old_keys:
+        raise ValueError(f"sub2api.{old_keys[0]} is fixed by the application")
+    return _build(Sub2APIConfig, data)
 
 
 def _feature(data: dict[str, Any]) -> FeatureConfig:

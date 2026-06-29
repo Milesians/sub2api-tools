@@ -18,6 +18,7 @@ from ...shared.security import Session
 
 router = APIRouter()
 _reports: dict[str, dict[str, Any]] = {}
+SETTINGS_PATH = "/api/v1/admin/settings"
 
 
 @router.get("/lg/config")
@@ -170,7 +171,7 @@ def diag_stream(events: int = 20, interval_ms: int = 200, bytes: int = 32) -> St
 
 def _settings() -> dict[str, Any]:
     ctx = get_context()
-    resp = ctx.sub2api.admin_get(ctx.cfg.sub2api.settings_path)
+    resp = ctx.sub2api.admin_get(SETTINGS_PATH)
     resp.raise_for_status()
     body = resp.json()
     data = body.get("data") if isinstance(body, dict) and "data" in body else body
