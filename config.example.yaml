@@ -1,0 +1,121 @@
+app:
+  listen: "0.0.0.0:8080"
+  env: "production"
+  basePath: "/tools"
+  trust_forwarded_headers: true
+  static_dir: "/app/frontend/dist"
+
+security:
+  session_secret: "change_this_session_secret"
+  session_ttl_seconds: 1800
+  allowed_origins:
+    - "https://sub2api.example.com"
+    - "https://*.sub2api.example.com"
+  sensitive_action_password: "change_this_sensitive_password"
+
+sub2api:
+  base_url: "https://sub2api.example.com"
+  admin_api_key: "change_this_admin_api_key"
+  settings_path: "/api/v1/admin/settings"
+  userinfo_path: "/api/v1/user"
+  endpoint_cache_ttl_seconds: 60
+
+storage:
+  sqlite_dsn: "/data/sub2api-tools.db"
+
+features:
+  - id: "looking-glass"
+    name: "网络诊断"
+    visibility:
+      - user
+      - admin
+    enabled: true
+
+  - id: "account-scheduler"
+    name: "账号调度"
+    visibility:
+      - admin
+    enabled: true
+
+looking_glass:
+  browser_repeat: 20
+  browser_timeout_ms: 8000
+  blob_sizes:
+    - "64k"
+    - "1m"
+    - "5m"
+    - "20m"
+  stream:
+    events: 20
+    interval_ms: 200
+    bytes: 32
+
+scheduler:
+  enabled: true
+  platform: "openai"
+  account_name_pattern: "pay\\d+"
+  interval_minutes: 15
+  heartbeat_file: "/data/scheduler-last-tick"
+  pacing_target_7d_utilization: 97.0
+  drain_target_7d_utilization: 99.4
+  hard_cap_7d_utilization: 99.8
+  hard_cap_5h_utilization: 98.0
+  protect_7d_utilization: 97.0
+  max_boost_ratio: 0.15
+  mild_boost_ratio: 0.35
+  max_boost_min: 1
+  boost_load_factor_multiplier: 3.0
+  mild_load_factor_multiplier: 2.0
+  max_load_factor: 100
+  max_active_probes_per_round: 10
+  usage_stale_threshold_minutes: 90
+  cooldown_minutes: 60
+  safe_tail_hours: 2.0
+  warmup_hours: 24.0
+  strong_score_threshold: 3.0
+  strong_min_required_rate: 0.6
+  mild_score_threshold: 1.0
+  ahead_band_pp: 3.0
+  cooldown_abs_rate_pph: 1.2
+  cooldown_required_rate_multiplier: 2.5
+  cooldown_near_target_band_pp: 2.0
+  will_hit_goal_soon_hours: 5.0
+  emergency_window_hours: 12
+  emergency_projected_end_threshold: 94.0
+  emergency_final_gap_pp: 5.0
+  emergency_rate_gap_pph: 0.8
+  terminal_drain_enabled: true
+  terminal_window_hours: 36.0
+  terminal_final_margin_hours: 0.25
+  terminal_min_runway_hours: 0.25
+  terminal_strong_gap_pp: 1.5
+  terminal_mild_gap_pp: 0.4
+  terminal_strong_required_rate_pph: 0.35
+  terminal_mild_required_rate_pph: 0.10
+  terminal_strong_pressure: 1.8
+  terminal_mild_pressure: 0.9
+  terminal_done_band_pp: 0.10
+  terminal_min_recent_rate_pph: 0.05
+  terminal_dynamic_load_factor_enabled: true
+  terminal_strong_load_factor_multiplier: 4.0
+  terminal_mild_load_factor_multiplier: 2.5
+  terminal_normal_load_factor_multiplier: 1.5
+  terminal_max_load_factor: 100
+  terminal_usage_stale_threshold_minutes: 20
+  terminal_max_active_probes_per_round: 50
+  terminal_active_probe_ratio: 0.50
+  terminal_min_active_probes_per_round: 20
+  terminal_interval_minutes: 15
+  priority_bands:
+    - 1010
+    - 1030
+    - 1050
+    - 1070
+    - 1099
+  sample_retention_days: 14
+  decision_retention_days: 30
+  state_retention_days: 30
+  openai_subscription_base_url: "https://chatgpt.com/backend-api"
+  account_profile_ttl_minutes: 720
+  account_profile_refresh_enabled: true
+  codex_invite_reset_base_url: "https://chatgpt.com/backend-api"

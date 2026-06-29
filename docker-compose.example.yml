@@ -1,0 +1,12 @@
+services:
+  sub2api-tools:
+    image: ghcr.io/milesians/sub2api-tools:latest
+    container_name: sub2api-tools
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:18080:8080"
+    volumes:
+      - ./data:/data
+      - ./config.yaml:/app/config.yaml:ro
+    security_opt:
+      - no-new-privileges:true
