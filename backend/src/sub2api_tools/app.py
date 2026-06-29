@@ -7,7 +7,7 @@ from pathlib import Path
 import uvicorn
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 
 from .modules.looking_glass.routes import router as lg_router
@@ -75,11 +75,16 @@ def _mount_frontend(app: FastAPI, cfg: Config) -> None:
         index = static_dir / "index.html"
         if not index.is_file():
             raise HTTPException(status_code=503, detail="frontend is not built")
-        return FileResponse(index)
+        return HTMLResponse(_index_html(index, cfg))
 
 
 def _under_base_path(request_path: str, base_path: str) -> bool:
     return base_path == "/" or request_path == base_path or request_path.startswith(f"{base_path}/")
+
+
+def _index_html(index: Path, cfg: Config) -> str:
+    assets_path = join_path(cfg.app.base_path, "/assets") + "/"
+    return index.read_text(encoding="utf-8").replace("./assets/", assets_path)
 
 
 def main() -> None:

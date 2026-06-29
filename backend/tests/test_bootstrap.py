@@ -66,6 +66,26 @@ def test_auth_me_restores_jwt_without_sub2api_call(tmp_path: Path) -> None:
     assert [item["id"] for item in body["features"]] == ["looking-glass", "account-scheduler"]
 
 
+def test_admin_route_serves_index_with_base_assets(tmp_path: Path) -> None:
+    dist = tmp_path / "dist"
+    assets = dist / "assets"
+    assets.mkdir(parents=True)
+    (assets / "index.js").write_text("console.log('ok')", encoding="utf-8")
+    (dist / "index.html").write_text(
+        '<script type="module" src="./assets/index.js"></script>',
+        encoding="utf-8",
+    )
+    app = create_app(_config(tmp_path, static_dir=dist))
+
+    with TestClient(app) as client:
+        res = client.get("/tools/admin/lg")
+
+    assert res.status_code == 200
+    assert res.headers["content-type"].startswith("text/html")
+    assert 'src="/tools/assets/index.js"' in res.text
+    assert "/tools/admin/assets/index.js" not in res.text
+
+
 def test_scheduler_disabled_does_not_create_sqlite(tmp_path: Path) -> None:
     db_path = tmp_path / "tools.db"
     app = create_app(_config(tmp_path))
@@ -170,13 +190,14 @@ def _config(
     tmp_path: Path,
     allowed_origins: list[str] | None = None,
     scheduler: dict | None = None,
+    static_dir: Path | None = None,
 ) -> Path:
     path = tmp_path / "config.yaml"
     path.write_text(yaml.safe_dump({
         "app": {
             "listen": "127.0.0.1:8080",
             "basePath": "/tools",
-            "static_dir": str(tmp_path / "dist"),
+            "static_dir": str(static_dir or tmp_path / "dist"),
         },
         "security": {
             "session_secret": "secret",

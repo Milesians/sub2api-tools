@@ -102,10 +102,9 @@ function cleanTokenFromURL() {
 
 function detectBasePath(): string {
   const current = normalizeBasePath(window.location.pathname)
-  const segments = current.split('/').filter(Boolean)
-  for (const featureSegment of ['lg', 'admin']) {
-    const index = segments.indexOf(featureSegment)
-    if (index >= 0) return normalizeBasePath(`/${segments.slice(0, index).join('/')}`)
+  for (const featurePath of ['/admin/scheduler', '/admin/lg', '/lg']) {
+    if (current === featurePath) return '/'
+    if (current.endsWith(featurePath)) return normalizeBasePath(current.slice(0, -featurePath.length))
   }
   return current
 }
