@@ -17,5 +17,6 @@ def health() -> dict[str, object]:
     return {
         "ok": True,
         "scheduler_enabled": cfg.scheduler.enabled,
+        "scheduler_auto_start": cfg.scheduler.auto_start,
         "scheduler_heartbeat_exists": heartbeat.is_file(),
     }

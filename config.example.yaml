@@ -50,6 +50,7 @@ looking_glass:
 
 scheduler:
   enabled: true
+  auto_start: true
   platform: "openai"
   account_name_pattern: "pay\\d+"
   interval_minutes: 15

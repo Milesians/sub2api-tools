@@ -82,6 +82,7 @@ class LookingGlassConfig:
 @dataclass
 class SchedulerConfig:
     enabled: bool = True
+    auto_start: bool = True
     platform: str = "openai"
     account_name_pattern: str = ""
     interval_minutes: int = 15

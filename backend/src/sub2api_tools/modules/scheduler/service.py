@@ -25,7 +25,7 @@ class SchedulerService:
             Store(self.core_cfg.db_path).close()
 
     def start(self) -> None:
-        if not self.cfg.scheduler.enabled or self._task is not None:
+        if not self.cfg.scheduler.enabled or not self.cfg.scheduler.auto_start or self._task is not None:
             return
         self._task = asyncio.create_task(self._loop())
 

@@ -77,6 +77,22 @@ def test_scheduler_disabled_does_not_create_sqlite(tmp_path: Path) -> None:
     assert not db_path.exists()
 
 
+def test_scheduler_can_query_without_auto_start(tmp_path: Path) -> None:
+    db_path = tmp_path / "tools.db"
+    app = create_app(_config(tmp_path, scheduler={"enabled": True, "auto_start": False}))
+
+    get_context().scheduler.start()
+
+    with TestClient(app) as client:
+        res = client.get("/tools/api/health")
+
+    assert res.status_code == 200
+    assert res.json()["scheduler_enabled"] is True
+    assert res.json()["scheduler_auto_start"] is False
+    assert db_path.exists()
+    assert get_context().scheduler._task is None
+
+
 def test_bootstrap_rejects_disallowed_origin(tmp_path: Path) -> None:
     app = create_app(_config(tmp_path, allowed_origins=["https://*.sub2api.example.com"]))
     get_context().sub2api = FakeSub2API("user")
@@ -150,7 +166,11 @@ def test_cors_allows_wildcard_origin(tmp_path: Path) -> None:
     assert res.headers["access-control-allow-origin"] == "https://admin.sub2api.example.com"
 
 
-def _config(tmp_path: Path, allowed_origins: list[str] | None = None) -> Path:
+def _config(
+    tmp_path: Path,
+    allowed_origins: list[str] | None = None,
+    scheduler: dict | None = None,
+) -> Path:
     path = tmp_path / "config.yaml"
     path.write_text(yaml.safe_dump({
         "app": {
@@ -170,9 +190,7 @@ def _config(tmp_path: Path, allowed_origins: list[str] | None = None) -> Path:
         "storage": {
             "sqlite_dsn": str(tmp_path / "tools.db"),
         },
-        "scheduler": {
-            "enabled": False,
-        },
+        "scheduler": scheduler or {"enabled": False},
         "features": [
             {
                 "id": "looking-glass",
